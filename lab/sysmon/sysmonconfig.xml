@@ -1,0 +1,81 @@
+<!--
+  Configuration Sysmon du laboratoire (victime Windows 10/11).
+  Installation : Sysmon64.exe -accepteula -i sysmonconfig.xml
+  Mise à jour  : Sysmon64.exe -c sysmonconfig.xml
+
+  Objectif : produire la télémétrie nécessaire aux scénarios S1 à S5 en limitant
+  le bruit. Pour un poste de production, partir d'une configuration communautaire
+  complète (SwiftOnSecurity, Olaf Hartong) et l'adapter.
+-->
+<Sysmon schemaversion="4.90">
+  <HashAlgorithms>SHA256,MD5</HashAlgorithms>
+  <CheckRevocation>False</CheckRevocation>
+  <EventFiltering>
+
+    <!-- 1 : création de processus — tout, sauf bruit connu -->
+    <RuleGroup name="process_creation" groupRelation="or">
+      <ProcessCreate onmatch="exclude">
+        <Image condition="is">C:\Windows\System32\conhost.exe</Image>
+        <Image condition="is">C:\Windows\System32\backgroundTaskHost.exe</Image>
+        <Image condition="is">C:\Windows\System32\RuntimeBroker.exe</Image>
+      </ProcessCreate>
+    </RuleGroup>
+
+    <!-- 3 : connexions réseau — binaires détournables et répertoires utilisateur -->
+    <RuleGroup name="network" groupRelation="or">
+      <NetworkConnect onmatch="include">
+        <Image condition="end with">\powershell.exe</Image>
+        <Image condition="end with">\pwsh.exe</Image>
+        <Image condition="end with">\cmd.exe</Image>
+        <Image condition="end with">\certutil.exe</Image>
+        <Image condition="end with">\bitsadmin.exe</Image>
+        <Image condition="end with">\rundll32.exe</Image>
+        <Image condition="end with">\regsvr32.exe</Image>
+        <Image condition="end with">\mshta.exe</Image>
+        <Image condition="contains">\AppData\</Image>
+        <Image condition="contains">\Users\Public\</Image>
+        <Image condition="contains">\Temp\</Image>
+        <DestinationPort condition="is">4444</DestinationPort>
+      </NetworkConnect>
+    </RuleGroup>
+
+    <!-- 10 : accès à la mémoire de LSASS -->
+    <RuleGroup name="process_access" groupRelation="or">
+      <ProcessAccess onmatch="include">
+        <TargetImage condition="end with">\lsass.exe</TargetImage>
+      </ProcessAccess>
+    </RuleGroup>
+
+    <!-- 11 : fichiers déposés dans des répertoires sensibles -->
+    <RuleGroup name="file_create" groupRelation="or">
+      <FileCreate onmatch="include">
+        <TargetFilename condition="contains">\Users\Public\</TargetFilename>
+        <TargetFilename condition="contains">\AppData\Local\Temp\</TargetFilename>
+        <TargetFilename condition="contains">\Start Menu\Programs\Startup\</TargetFilename>
+        <TargetFilename condition="end with">.dmp</TargetFilename>
+        <TargetFilename condition="end with">.ps1</TargetFilename>
+        <TargetFilename condition="end with">.exe</TargetFilename>
+        <TargetFilename condition="contains">\Windows\CCM\Inventory\</TargetFilename>
+      </FileCreate>
+    </RuleGroup>
+
+    <!-- 12/13/14 : clés de démarrage automatique -->
+    <RuleGroup name="registry" groupRelation="or">
+      <RegistryEvent onmatch="include">
+        <TargetObject condition="contains">\CurrentVersion\Run</TargetObject>
+        <TargetObject condition="contains">\CurrentVersion\RunOnce</TargetObject>
+        <TargetObject condition="contains">\Services\</TargetObject>
+        <TargetObject condition="contains">\Winlogon\</TargetObject>
+      </RegistryEvent>
+    </RuleGroup>
+
+    <!-- 22 : requêtes DNS (hors domaines de mise à jour courants) -->
+    <RuleGroup name="dns" groupRelation="or">
+      <DnsQuery onmatch="exclude">
+        <QueryName condition="end with">.windowsupdate.com</QueryName>
+        <QueryName condition="end with">.microsoft.com</QueryName>
+      </DnsQuery>
+    </RuleGroup>
+
+  </EventFiltering>
+</Sysmon>

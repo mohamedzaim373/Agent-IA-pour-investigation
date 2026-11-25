@@ -1,0 +1,124 @@
+# Politique déclarative de permissions de l'agent (GP-02).
+#
+# Ce fichier est versionné et évalué par la passerelle d'outils, jamais par le LLM.
+# Toute modification change son empreinte SHA-256, enregistrée avec chaque
+# investigation (GT-05).
+
+version: "1.0"
+
+# ---------------------------------------------------------------------------
+# Niveaux d'autonomie (chapitre 8.1)
+# ---------------------------------------------------------------------------
+autonomy:
+  # Niveau maximal fixé par le responsable SOC. L'analyste peut l'abaisser
+  # pour une investigation, jamais le relever.
+  max_level: N2
+  default_level: N1
+  levels:
+    N0:
+      name: Assistant
+      description: "Plan proposé ; chaque appel d'outil est approuvé par l'analyste."
+      auto_execute: []
+    N1:
+      name: Lecture autonome
+      description: "Lectures internes libres dans le budget ; le reste est soumis à approbation."
+      auto_execute: [read_internal]
+    N2:
+      name: Enrichissement étendu
+      description: "N1 + requêtes vers les services externes de TI, sous liste blanche."
+      auto_execute: [read_internal, read_external]
+    N3:
+      name: Réponse supervisée
+      description: "Décrit, non implémenté : aucune action n'est exécutable."
+      implemented: false
+      auto_execute: []
+
+# Classes de risque (GP-01). Une action « action » n'est jamais exécutée
+# automatiquement ; une action irréversible est toujours refusée.
+risk_classes:
+  read_internal: "Lecture de sources internes au laboratoire (SIEM, MISP, ATT&CK)."
+  read_external: "Lecture de services externes : expose des observables à un tiers."
+  action: "Modification de l'état d'un système (confinement, blocage)."
+
+# ---------------------------------------------------------------------------
+# Outils déclarés (GP-01, GP-04, GP-05)
+# ---------------------------------------------------------------------------
+tools:
+  search_logs:
+    risk: read_internal
+    enabled: true
+    description: "Recherche en lecture dans les journaux Wazuh (fenêtre, hôte, utilisateur, IOC)."
+    allowed_indices: ["wazuh-alerts-*", "wazuh-archives-*"]
+    max_window_minutes: 1440
+    max_results: 200
+    max_calls: 20
+    timeout_s: 20
+
+  get_process_tree:
+    risk: read_internal
+    enabled: true
+    description: "Reconstruit l'arbre de processus (parents, enfants) autour d'un processus."
+    max_window_minutes: 1440
+    max_calls: 10
+    timeout_s: 20
+
+  misp_lookup:
+    risk: read_internal
+    enabled: true
+    description: "Recherche d'un observable dans la base d'IOC MISP."
+    max_calls: 25
+    timeout_s: 15
+
+  ti_lookup:
+    risk: read_external
+    enabled: true
+    description: "Réputation d'un observable auprès de services de Threat Intelligence."
+    allowed_providers: [virustotal, abuseipdb]
+    # Les observables internes (IP RFC1918, noms d'hôte et comptes du domaine)
+    # ne sortent jamais du laboratoire (GP-08).
+    forbid_internal_observables: true
+    max_calls: 15
+    timeout_s: 20
+
+  attack_search:
+    risk: read_internal
+    enabled: true
+    description: "Recherche sémantique dans la base MITRE ATT&CK (RAG)."
+    max_k: 10
+    max_calls: 20
+    timeout_s: 10
+
+  isolate_host:
+    risk: action
+    enabled: false        # niveau N3 décrit mais non implémenté
+    reversible: true
+    description: "Confinement réseau d'un hôte (décrit, non implémenté)."
+    max_calls: 0
+    timeout_s: 30
+
+# ---------------------------------------------------------------------------
+# Budgets par investigation (GP-05)
+# ---------------------------------------------------------------------------
+budgets:
+  max_steps: 30
+  max_tool_calls: 45
+  max_tokens: 120000
+  max_duration_s: 600
+  # Arrêt sur blocage : nombre d'appels refusés ou en erreur consécutifs.
+  max_consecutive_failures: 4
+
+# ---------------------------------------------------------------------------
+# Validation humaine (EF-19)
+# ---------------------------------------------------------------------------
+approval:
+  timeout_s: 900          # sans réponse, la demande est refusée
+  require_reason_on_reject: true
+
+# ---------------------------------------------------------------------------
+# Confidentialité (GP-08)
+# ---------------------------------------------------------------------------
+privacy:
+  # Pseudonymiser comptes, hôtes, e-mails et IP internes avant tout envoi
+  # à un LLM externe (API).
+  pseudonymize_for_external_llm: true
+  internal_domains: ["lab.local"]

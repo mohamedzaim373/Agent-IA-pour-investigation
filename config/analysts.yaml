@@ -1,0 +1,49 @@
+# Identités et rôles (GP-03, ENF-05).
+#
+# L'agent agit toujours avec les droits de l'analyste qui a lancé
+# l'investigation, jamais au-delà. Les jetons d'accès ne sont PAS stockés ici :
+# seules leurs empreintes sont conservées dans investigation_lab/data/tokens.json
+# (non versionné), créé par :  python -m scripts.create_token <identifiant>
+
+roles:
+  analyst:
+    description: "Analyste SOC : lance, suit, valide et corrige les investigations."
+    max_autonomy: N2
+    tools: [search_logs, get_process_tree, misp_lookup, ti_lookup, attack_search]
+    can_approve: true
+    can_read_audit: false
+  soc_manager:
+    description: "Responsable SOC : consulte tout, approuve, lit l'audit."
+    max_autonomy: N2
+    tools: [search_logs, get_process_tree, misp_lookup, ti_lookup, attack_search]
+    can_approve: true
+    can_read_audit: true
+  auditor:
+    description: "Auditeur / RSSI : lecture seule des rapports et du journal d'audit."
+    max_autonomy: N0
+    tools: []
+    can_approve: false
+    can_read_audit: true
+  junior:
+    description: "Analyste junior : pas d'exposition d'observables à l'extérieur."
+    max_autonomy: N1
+    tools: [search_logs, get_process_tree, misp_lookup, attack_search]
+    can_approve: true
+    can_read_audit: false
+
+analysts:
+  jdupont:
+    name: "Analyste SOC (démo)"
+    role: analyst
+  mmanager:
+    name: "Responsable SOC (démo)"
+    role: soc_manager
+  aaudit:
+    name: "Auditeur (démo)"
+    role: auditor
+  jjunior:
+    name: "Analyste junior (démo)"
+    role: junior
+  soc-duty:
+    name: "Compte de service pour les alertes Wazuh entrantes"
+    role: analyst

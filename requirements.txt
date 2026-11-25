@@ -1,0 +1,23 @@
+# Versions testées (Python 3.11 à 3.13) — ENF-08 : reproductibilité
+# Agent et RAG
+langgraph==1.2.24
+langchain-core==1.8.4
+pydantic==2.14.4
+numpy==2.5.5
+scipy==1.18.1
+scikit-learn==1.9.1
+# Passerelle, connecteurs, stockage
+requests==2.34.2
+PyYAML==6.0.4
+python-dotenv==1.2.4
+SQLAlchemy==2.1.9
+psycopg[binary]==3.3.2
+# Service et interface
+fastapi==0.165.0
+uvicorn[standard]==0.54.0
+streamlit==1.67.0
+pandas==3.1.1
+matplotlib==3.11.2
+# Tests
+pytest==9.2.0
+httpx==0.28.1

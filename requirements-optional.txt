@@ -1,0 +1,5 @@
+# Options non indispensables au prototype
+# Embeddings neuronaux pour le RAG (EMBEDDER=sbert)
+sentence-transformers>=3.0
+# Stockage vectoriel ChromaDB (VECTOR_STORE=chroma)
+chromadb>=1.0

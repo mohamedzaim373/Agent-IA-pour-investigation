@@ -1,0 +1,57 @@
+#!/var/ossec/framework/python/bin/python3
+"""Intégration Wazuh -> agent d'investigation (EF-01).
+
+À copier dans /var/ossec/integrations/custom-ai-investigator puis :
+    chown root:wazuh /var/ossec/integrations/custom-ai-investigator
+    chmod 750 /var/ossec/integrations/custom-ai-investigator
+
+Wazuh appelle ce script avec : <fichier_alerte> <api_key> <hook_url>.
+L'alerte est transmise telle quelle à POST /alerts/wazuh, avec le jeton
+d'intégration dans l'en-tête X-Webhook-Token. Bibliothèque standard uniquement.
+"""
+
+import json
+import sys
+import time
+import urllib.error
+import urllib.request
+
+LOG = "/var/ossec/logs/integrations.log"
+
+
+def log(message: str) -> None:
+    try:
+        with open(LOG, "a", encoding="utf-8") as fh:
+            fh.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} custom-ai-investigator: {message}\n")
+    except OSError:
+        pass
+
+
+def main(argv: list) -> int:
+    if len(argv) < 4:
+        log("arguments manquants")
+        return 1
+    alert_file, api_key, hook_url = argv[1], argv[2], argv[3]
+    with open(alert_file, encoding="utf-8") as fh:
+        alert = json.load(fh)
+    body = json.dumps(alert).encode("utf-8")
+    request = urllib.request.Request(hook_url, data=body, method="POST",
+                                     headers={"Content-Type": "application/json", "X-Webhook-Token": api_key})
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(request, timeout=10) as resp:
+                answer = json.loads(resp.read().decode("utf-8") or "{}")
+                log(f"alerte {alert.get('id')} (règle {alert.get('rule', {}).get('id')}) -> "
+                    f"{answer.get('investigation_id')}")
+                return 0
+        except urllib.error.HTTPError as exc:
+            log(f"refus HTTP {exc.code} : {exc.read()[:200]!r}")
+            return 1
+        except (urllib.error.URLError, TimeoutError) as exc:
+            log(f"tentative {attempt + 1} échouée : {exc}")
+            time.sleep(2 * (attempt + 1))
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

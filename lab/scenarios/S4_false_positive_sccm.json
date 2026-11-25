@@ -1,0 +1,573 @@
+{
+  "id": "S4",
+  "name": "Faux positif : inventaire SCCM en PowerShell encodé",
+  "description": "L'agent de gestion SCCM (CcmExec) exécute un script d'inventaire encodé : la règle se déclenche alors que l'activité est légitime.",
+  "atomic_tests": [],
+  "alert": {
+    "_id": "S4-alert-012",
+    "timestamp": "2026-10-15T03:00:02.700+0000",
+    "agent": {
+      "id": "001",
+      "name": "WIN10-01",
+      "ip": "192.168.56.20"
+    },
+    "manager": {
+      "name": "wazuh-siem"
+    },
+    "decoder": {
+      "name": "windows_eventchannel"
+    },
+    "location": "EventChannel",
+    "data": {
+      "win": {
+        "system": {
+          "providerName": "Microsoft-Windows-Sysmon",
+          "eventID": "1",
+          "systemTime": "2026-10-15T03:00:02.7000000Z",
+          "computer": "WIN10-01.lab.local",
+          "channel": "Microsoft-Windows-Sysmon/Operational"
+        },
+        "eventdata": {
+          "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "commandLine": "powershell.exe -NoLogo -NonInteractive -ExecutionPolicy Bypass -EncodedCommand RwBlAHQALQBDAGkAbQBJAG4AcwB0AGEAbgBjAGUAIABXAGkAbgAzADIAXwBRAHUAaQBjAGsARgBpAHgARQBuAGcAaQBuAGUAZQByAGkAbgBnACAAfAAgAFMAZQBsAGUAYwB0AC0ATwBiAGoAZQBjAHQAIABIAG8AdABGAGkAeABJAEQALABJAG4AcwB0AGEAbABsAGUAZABPAG4AIAB8ACAARQB4AHAAbwByAHQALQBDAHMAdgAgAEMAOgBcAFcAaQBuAGQAbwB3AHMAXABDAEMATQBcAEkAbgB2AGUAbgB0AG8AcgB5AFwAaABvAHQAZgBpAHgALgBjAHMAdgAgAC0ATgBvAFQAeQBwAGUASQBuAGYAbwByAG0AYQB0AGkAbwBuAA==",
+          "parentImage": "C:\\Windows\\CCM\\CcmExec.exe",
+          "parentCommandLine": "C:\\Windows\\CCM\\CcmExec.exe",
+          "user": "NT AUTHORITY\\SYSTEM",
+          "processGuid": "{203390ec-eae9-b492-7cef-e1a39fd68f50}",
+          "parentProcessGuid": "{1e8bbf64-7011-fdd0-5ec9-4430cd5c3001}",
+          "processId": "10220",
+          "parentProcessId": "2440",
+          "integrityLevel": "System",
+          "currentDirectory": "C:\\Windows\\system32\\",
+          "originalFileName": "POWERSHELL.EXE",
+          "hashes": "SHA256=53DADC40BB276161FBB4864750877D9641EBE8A5DEE5CE338D2554171EEBC6D1,MD5=00E65AA87285501FA9625096081BA2D9"
+        }
+      }
+    },
+    "rule": {
+      "id": "100200",
+      "level": 12,
+      "description": "PowerShell lancé avec une commande encodée (-EncodedCommand)",
+      "mitre": {
+        "id": [
+          "T1059.001",
+          "T1027.010"
+        ]
+      },
+      "groups": [
+        "sysmon",
+        "powershell"
+      ],
+      "firedtimes": 1
+    }
+  },
+  "logs": [
+    {
+      "_id": "S4-evt-001",
+      "timestamp": "2026-10-15T02:46:15.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-15T02:46:15.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "commandLine": "\"C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe\" --type=renderer",
+            "parentImage": "C:\\Windows\\explorer.exe",
+            "parentCommandLine": "C:\\Windows\\Explorer.EXE",
+            "user": "LAB\\jdoe",
+            "processGuid": "{6692afa0-550e-d0b1-ff93-29363fb29e8d}",
+            "parentProcessGuid": "{ae93087f-cd82-d3a8-8d75-9e680bf1fc2e}",
+            "processId": "4120",
+            "parentProcessId": "3312",
+            "integrityLevel": "Medium",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "CHROME.EXE",
+            "hashes": "SHA256=B98A42E7E75A66429BF21F48D54033A6083EAF101BD296B5FE5A63134C2B6565,MD5=43D5D300D710001CC331581C761169FB"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-002",
+      "timestamp": "2026-10-15T02:47:30.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Security-Auditing",
+            "eventID": "4624",
+            "systemTime": "2026-10-15T02:47:30.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Security"
+          },
+          "eventdata": {
+            "targetUserName": "jdoe",
+            "targetDomainName": "LAB",
+            "logonType": "3",
+            "ipAddress": "192.168.56.21",
+            "subjectUserName": "-"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-003",
+      "timestamp": "2026-10-15T02:50:00.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-15T02:50:00.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\svchost.exe",
+            "commandLine": "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s Schedule",
+            "parentImage": "C:\\Windows\\System32\\services.exe",
+            "parentCommandLine": "C:\\Windows\\system32\\services.exe",
+            "user": "NT AUTHORITY\\SYSTEM",
+            "processGuid": "{6b6d5dbc-6bcf-6c40-ad58-5ec1101bc4f0}",
+            "parentProcessGuid": "{5f793aac-a426-d2c6-f0ee-0ad3769bb181}",
+            "processId": "1288",
+            "parentProcessId": "680",
+            "integrityLevel": "System",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "SVCHOST.EXE",
+            "hashes": "SHA256=61ED4F85C992073BF9CF86A8CCF97A3836235B3026EEE472B11BDD9EB577ED2A,MD5=16F672C8DA966DED99900DBAC162C311"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-004",
+      "timestamp": "2026-10-15T02:53:45.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-15T02:53:45.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\notepad.exe",
+            "commandLine": "\"C:\\Windows\\system32\\notepad.exe\" C:\\Users\\Public\\Documents\\notes_reunion.txt",
+            "parentImage": "C:\\Windows\\explorer.exe",
+            "parentCommandLine": "C:\\Windows\\Explorer.EXE",
+            "user": "LAB\\jdoe",
+            "processGuid": "{e7be0a30-01d5-cefc-d7e4-30d2eacb0048}",
+            "parentProcessGuid": "{ae93087f-cd82-d3a8-8d75-9e680bf1fc2e}",
+            "processId": "5544",
+            "parentProcessId": "3312",
+            "integrityLevel": "Medium",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "NOTEPAD.EXE",
+            "hashes": "SHA256=CD7066F4B24DCCEC89137DC00DDD78F6A39FC3D63C1039ECB53356537D5ED6D3,MD5=89BE9BF79E9232BF66BEF89C3DD8C891"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-005",
+      "timestamp": "2026-10-15T02:58:45.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "22",
+            "systemTime": "2026-10-15T02:58:45.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "processGuid": "{6692afa0-550e-d0b1-ff93-29363fb29e8d}",
+            "processId": "4120",
+            "queryName": "intranet.lab.local",
+            "queryResults": "192.168.56.5;"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-006",
+      "timestamp": "2026-10-15T03:00:00.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "3",
+            "systemTime": "2026-10-15T03:00:00.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "processGuid": "{6692afa0-550e-d0b1-ff93-29363fb29e8d}",
+            "processId": "4120",
+            "user": "LAB\\jdoe",
+            "protocol": "tcp",
+            "initiated": "true",
+            "sourceIp": "192.168.56.20",
+            "sourcePort": "49705",
+            "destinationIp": "192.168.56.5",
+            "destinationPort": "443",
+            "destinationHostname": "intranet.lab.local"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-007",
+      "timestamp": "2026-10-15T03:05:00.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-15T03:05:00.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\taskhostw.exe",
+            "commandLine": "taskhostw.exe",
+            "parentImage": "C:\\Windows\\System32\\svchost.exe",
+            "parentCommandLine": "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s Schedule",
+            "user": "LAB\\jdoe",
+            "processGuid": "{e3ec2129-4119-6b41-9864-dc68b52d99eb}",
+            "parentProcessGuid": "{6b6d5dbc-6bcf-6c40-ad58-5ec1101bc4f0}",
+            "processId": "6020",
+            "parentProcessId": "1288",
+            "integrityLevel": "Medium",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "TASKHOSTW.EXE",
+            "hashes": "SHA256=EADE2CD8C84CE631A2A6917151557D03D7BCF704B2A911E5910025FA412EE1D7,MD5=6913C574C95575338A5B0D0544F280FC"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-008",
+      "timestamp": "2026-10-15T02:55:00.000+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-15T02:55:00.0000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\CCM\\CcmExec.exe",
+            "commandLine": "C:\\Windows\\CCM\\CcmExec.exe",
+            "parentImage": "C:\\Windows\\System32\\services.exe",
+            "parentCommandLine": "C:\\Windows\\system32\\services.exe",
+            "user": "NT AUTHORITY\\SYSTEM",
+            "processGuid": "{1e8bbf64-7011-fdd0-5ec9-4430cd5c3001}",
+            "parentProcessGuid": "{5f793aac-a426-d2c6-f0ee-0ad3769bb181}",
+            "processId": "2440",
+            "parentProcessId": "680",
+            "integrityLevel": "System",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "CCMEXEC.EXE",
+            "hashes": "SHA256=B4563D1536EFEC9E2B2A63CF81E314FEBD92246DF83A9C5F50437D02369B716D,MD5=3E643046AF7EAA395E35332ECD0A4171"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-009",
+      "timestamp": "2026-10-15T03:00:02.700+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-15T03:00:02.7000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "commandLine": "powershell.exe -NoLogo -NonInteractive -ExecutionPolicy Bypass -EncodedCommand RwBlAHQALQBDAGkAbQBJAG4AcwB0AGEAbgBjAGUAIABXAGkAbgAzADIAXwBRAHUAaQBjAGsARgBpAHgARQBuAGcAaQBuAGUAZQByAGkAbgBnACAAfAAgAFMAZQBsAGUAYwB0AC0ATwBiAGoAZQBjAHQAIABIAG8AdABGAGkAeABJAEQALABJAG4AcwB0AGEAbABsAGUAZABPAG4AIAB8ACAARQB4AHAAbwByAHQALQBDAHMAdgAgAEMAOgBcAFcAaQBuAGQAbwB3AHMAXABDAEMATQBcAEkAbgB2AGUAbgB0AG8AcgB5AFwAaABvAHQAZgBpAHgALgBjAHMAdgAgAC0ATgBvAFQAeQBwAGUASQBuAGYAbwByAG0AYQB0AGkAbwBuAA==",
+            "parentImage": "C:\\Windows\\CCM\\CcmExec.exe",
+            "parentCommandLine": "C:\\Windows\\CCM\\CcmExec.exe",
+            "user": "NT AUTHORITY\\SYSTEM",
+            "processGuid": "{203390ec-eae9-b492-7cef-e1a39fd68f50}",
+            "parentProcessGuid": "{1e8bbf64-7011-fdd0-5ec9-4430cd5c3001}",
+            "processId": "10220",
+            "parentProcessId": "2440",
+            "integrityLevel": "System",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "POWERSHELL.EXE",
+            "hashes": "SHA256=53DADC40BB276161FBB4864750877D9641EBE8A5DEE5CE338D2554171EEBC6D1,MD5=00E65AA87285501FA9625096081BA2D9"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-010",
+      "timestamp": "2026-10-15T03:00:05.100+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "3",
+            "systemTime": "2026-10-15T03:00:05.1000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "processGuid": "{203390ec-eae9-b492-7cef-e1a39fd68f50}",
+            "processId": "10220",
+            "user": "NT AUTHORITY\\SYSTEM",
+            "protocol": "tcp",
+            "initiated": "true",
+            "sourceIp": "192.168.56.20",
+            "sourcePort": "49709",
+            "destinationIp": "192.168.56.5",
+            "destinationPort": "443",
+            "destinationHostname": "sccm01.lab.local"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-evt-011",
+      "timestamp": "2026-10-15T03:00:07.900+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "11",
+            "systemTime": "2026-10-15T03:00:07.9000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "processGuid": "{203390ec-eae9-b492-7cef-e1a39fd68f50}",
+            "processId": "10220",
+            "targetFilename": "C:\\Windows\\CCM\\Inventory\\hotfix.csv",
+            "user": "NT AUTHORITY\\SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "_id": "S4-alert-012",
+      "timestamp": "2026-10-15T03:00:02.700+0000",
+      "agent": {
+        "id": "001",
+        "name": "WIN10-01",
+        "ip": "192.168.56.20"
+      },
+      "manager": {
+        "name": "wazuh-siem"
+      },
+      "decoder": {
+        "name": "windows_eventchannel"
+      },
+      "location": "EventChannel",
+      "data": {
+        "win": {
+          "system": {
+            "providerName": "Microsoft-Windows-Sysmon",
+            "eventID": "1",
+            "systemTime": "2026-10-15T03:00:02.7000000Z",
+            "computer": "WIN10-01.lab.local",
+            "channel": "Microsoft-Windows-Sysmon/Operational"
+          },
+          "eventdata": {
+            "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+            "commandLine": "powershell.exe -NoLogo -NonInteractive -ExecutionPolicy Bypass -EncodedCommand RwBlAHQALQBDAGkAbQBJAG4AcwB0AGEAbgBjAGUAIABXAGkAbgAzADIAXwBRAHUAaQBjAGsARgBpAHgARQBuAGcAaQBuAGUAZQByAGkAbgBnACAAfAAgAFMAZQBsAGUAYwB0AC0ATwBiAGoAZQBjAHQAIABIAG8AdABGAGkAeABJAEQALABJAG4AcwB0AGEAbABsAGUAZABPAG4AIAB8ACAARQB4AHAAbwByAHQALQBDAHMAdgAgAEMAOgBcAFcAaQBuAGQAbwB3AHMAXABDAEMATQBcAEkAbgB2AGUAbgB0AG8AcgB5AFwAaABvAHQAZgBpAHgALgBjAHMAdgAgAC0ATgBvAFQAeQBwAGUASQBuAGYAbwByAG0AYQB0AGkAbwBuAA==",
+            "parentImage": "C:\\Windows\\CCM\\CcmExec.exe",
+            "parentCommandLine": "C:\\Windows\\CCM\\CcmExec.exe",
+            "user": "NT AUTHORITY\\SYSTEM",
+            "processGuid": "{203390ec-eae9-b492-7cef-e1a39fd68f50}",
+            "parentProcessGuid": "{1e8bbf64-7011-fdd0-5ec9-4430cd5c3001}",
+            "processId": "10220",
+            "parentProcessId": "2440",
+            "integrityLevel": "System",
+            "currentDirectory": "C:\\Windows\\system32\\",
+            "originalFileName": "POWERSHELL.EXE",
+            "hashes": "SHA256=53DADC40BB276161FBB4864750877D9641EBE8A5DEE5CE338D2554171EEBC6D1,MD5=00E65AA87285501FA9625096081BA2D9"
+          }
+        }
+      },
+      "rule": {
+        "id": "100200",
+        "level": 12,
+        "description": "PowerShell lancé avec une commande encodée (-EncodedCommand)",
+        "mitre": {
+          "id": [
+            "T1059.001",
+            "T1027.010"
+          ]
+        },
+        "groups": [
+          "sysmon",
+          "powershell"
+        ],
+        "firedtimes": 1
+      }
+    }
+  ],
+  "misp": {},
+  "threat_intel": {},
+  "ground_truth": {
+    "verdict": "false_positive",
+    "techniques": [],
+    "acceptable_techniques": [],
+    "key_events": [
+      "S4-evt-009"
+    ],
+    "context_events": [
+      "S4-evt-010",
+      "S4-evt-011"
+    ],
+    "malicious_iocs": []
+  }
+}

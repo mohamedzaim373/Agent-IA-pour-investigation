@@ -1,0 +1,23 @@
+# Secrets
+.env
+
+# Données d'exécution (preuves, audit, rapports, jetons)
+investigation_lab/
+*.db
+*.db-wal
+*.db-shm
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# Notebooks et caches de modèles
+.ipynb_checkpoints/
+.cache/
+chroma/

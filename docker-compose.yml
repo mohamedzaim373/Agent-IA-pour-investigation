@@ -1,0 +1,135 @@
+# Services de l'agent sur l'hôte Docker du laboratoire (192.168.56.40) — chapitre 11.
+#
+#   docker compose up -d --build                      # API + interface (SQLite, simulation ou live)
+#   docker compose --profile postgres up -d           # + PostgreSQL pour les preuves et l'audit
+#   docker compose --profile ollama up -d             # + LLM local
+#   docker compose --profile misp up -d               # + MISP (base d'IOC)
+#
+# Configuration : copier .env.example en .env et l'adapter. Aucun secret dans ce fichier.
+
+name: ai-investigator
+
+x-agent: &agent
+  build: .
+  image: ai-investigator:1.0
+  env_file:
+    - path: .env
+      required: false
+  volumes:
+    - ./investigation_lab:/app/investigation_lab
+  restart: unless-stopped
+  networks: [lab]
+
+services:
+  api:
+    <<: *agent
+    command: ["uvicorn", "app.api:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+
+  ui:
+    <<: *agent
+    command: ["streamlit", "run", "app/ui.py", "--server.port", "8501", "--server.address", "0.0.0.0",
+              "--browser.gatherUsageStats", "false"]
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on: [api]
+    healthcheck:
+      disable: true
+
+  postgres:
+    image: postgres:16.6-alpine
+    profiles: [postgres]
+    environment:
+      POSTGRES_DB: investigator
+      POSTGRES_USER: investigator
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U investigator -d investigator"]
+      interval: 10s
+      retries: 5
+    restart: unless-stopped
+    networks: [lab]
+
+  ollama:
+    image: ${OLLAMA_IMAGE:-ollama/ollama:0.5.7}
+    profiles: [ollama]
+    volumes:
+      - ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+    networks: [lab]
+
+  # ---------------------------------------------------------------- MISP
+  # Images officielles du projet misp-docker. À démarrer pendant les tests
+  # seulement sur une configuration à 16 Go (chapitre 11.2).
+  misp-db:
+    image: mariadb:10.11
+    profiles: [misp]
+    environment:
+      MARIADB_DATABASE: misp
+      MARIADB_USER: misp
+      MARIADB_PASSWORD: ${MISP_DB_PASSWORD:-}
+      MARIADB_ROOT_PASSWORD: ${MISP_DB_ROOT_PASSWORD:-}
+    volumes:
+      - misp-db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      retries: 10
+    restart: unless-stopped
+    networks: [lab]
+
+  misp-redis:
+    image: valkey/valkey:7.2
+    profiles: [misp]
+    restart: unless-stopped
+    networks: [lab]
+
+  misp-modules:
+    image: ${MISP_MODULES_IMAGE:-ghcr.io/misp/misp-docker/misp-modules:latest}
+    profiles: [misp]
+    restart: unless-stopped
+    networks: [lab]
+
+  misp-core:
+    image: ${MISP_CORE_IMAGE:-ghcr.io/misp/misp-docker/misp-core:latest}
+    profiles: [misp]
+    depends_on:
+      misp-db:
+        condition: service_healthy
+      misp-redis:
+        condition: service_started
+    environment:
+      BASE_URL: ${MISP_BASE_URL:-https://192.168.56.40:8443}
+      ADMIN_EMAIL: ${MISP_ADMIN_EMAIL:-admin@lab.local}
+      ADMIN_PASSWORD: ${MISP_ADMIN_PASSWORD:-}
+      ADMIN_KEY: ${MISP_KEY:-}
+      MYSQL_HOST: misp-db
+      MYSQL_USER: misp
+      MYSQL_PASSWORD: ${MISP_DB_PASSWORD:-}
+      MYSQL_DATABASE: misp
+      REDIS_HOST: misp-redis
+      MISP_MODULES_FQDN: http://misp-modules
+      DISABLE_IPV6: "true"
+    volumes:
+      - misp-files:/var/www/MISP/app/files
+    ports:
+      - "8443:443"
+    restart: unless-stopped
+    networks: [lab]
+
+networks:
+  lab:
+    name: investigator-lab
+
+volumes:
+  pgdata:
+  ollama:
+  misp-db:
+  misp-files:
